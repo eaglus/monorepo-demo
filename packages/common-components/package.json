@@ -1,0 +1,9 @@
+{
+  "name": "@tsp-wl/common-components",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.ts",
+  "dependencies": {
+    "@tsp-wl/utils": "^1.0.0"
+  }
+}
