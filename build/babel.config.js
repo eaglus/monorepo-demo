@@ -23,7 +23,12 @@ module.exports = api => {
           loose: true
         }
       ],
-      '@babel/preset-react',
+      [
+        '@babel/preset-react',
+        {
+          runtime: 'automatic'
+        }
+      ],
       '@babel/preset-typescript'
     ],
     plugins: [
