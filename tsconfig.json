@@ -32,26 +32,18 @@
     "moduleResolution": "node",
     "baseUrl": "./",
 
-    "paths": {
-      "*": [
-        "*",
-        "src/js/*"
-      ]
-    },
-
     "typeRoots": [
       "node_modules/@types"
     ],
 
     "types": [
       "node",
-      "jest",
       "./types/global"
     ],
 
     "esModuleInterop": true                   /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
   },
   "include": [
-    "./src"
+    "./packages"
   ]
 }

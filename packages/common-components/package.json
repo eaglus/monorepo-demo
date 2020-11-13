@@ -2,7 +2,7 @@
   "name": "@tsp-wl/common-components",
   "version": "1.0.0",
   "private": true,
-  "main": "index.ts",
+  "main": "index.tsx",
   "dependencies": {
     "@tsp-wl/utils": "^1.0.0"
   }

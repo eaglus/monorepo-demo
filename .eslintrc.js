@@ -10,8 +10,7 @@ module.exports = {
     react: {
       version: 'detect'
     },
-    'import/internal-regex':
-      '^(types/|components|containers|client|providers|reducers|routes|selectors|server|utils|actions)/?'
+    'import/internal-regex': '^(app/|common-components|utils)/?'
   },
   parserOptions: {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
@@ -21,6 +20,7 @@ module.exports = {
     }
   },
   rules: {
+    'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
     'react/display-name': 'off',
     'no-unused-vars': 'off',
@@ -71,19 +71,9 @@ module.exports = {
   },
   overrides: [
     {
-      files: [
-        './bin/**',
-        './*.js',
-        './build/*.js'
-      ],
+      files: ['./packages/**', './build/**', './*.js'],
       rules: {
         '@typescript-eslint/no-var-requires': 'off'
-      }
-    },
-    {
-      files: ['./**/*.test.ts'],
-      rules: {
-        '@typescript-eslint/consistent-type-assertions': 'off'
       }
     }
   ]
