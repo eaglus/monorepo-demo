@@ -1,7 +1,7 @@
 {
-  "name": "@tsp-wl/common-components",
-  "version": "1.0.0",
   "private": true,
+  "name": "@tsp-wl/auth",
+  "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
     "@tsp-wl/utils": "^1.0.0"

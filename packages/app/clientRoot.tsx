@@ -1,11 +1,13 @@
-import { Button, FormattedNumber } from '@tsp-wl/common-components';
+import React from 'react';
+import { Route } from 'react-router-dom';
 
 export function ClientRoot() {
   return (
-    <div>
-      <Button>
-        <FormattedNumber value={5} />
-      </Button>
-    </div>
+    <>
+      <Route path={'/'}>
+        <div></div>
+      </Route>
+      <Route path={'/profile'}></Route>
+    </>
   );
 }

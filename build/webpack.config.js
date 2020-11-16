@@ -1,6 +1,6 @@
 const path = require('path');
 
-const ExtractCssChunks = require('extract-css-chunks-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -46,11 +46,7 @@ function getResolve() {
 
   return merge(resolveHmr, {
     modules: ['node_modules'],
-    extensions: ['.ts', '.tsx', '.js', '.css'],
-    fallback: {
-      path: false,
-      fs: false
-    }
+    extensions: ['.ts', '.tsx', '.js', '.css']
   });
 }
 
@@ -67,15 +63,9 @@ function getRules() {
 
   const cssLoadersTop = [
     {
-      loader: ExtractCssChunks.loader,
-      options: {
-        hmr: enableHmr
-      }
+      loader: MiniCssExtractPlugin.loader
     }
   ];
-
-  const emitFile = true;
-  const outputPath = '';
 
   const babelLoaderUse = [
     {
@@ -123,31 +113,15 @@ function getRules() {
           }
         }
       ]
-    },
-    {
-      test: /\.(png|gif|jpg|ttf|eot|woff|woff2|ico|svg)$/,
-      loader: 'url-loader',
-      options: {
-        limit: 10,
-        mimetype: 'image/svg+xml',
-        fallback: {
-          loader: 'file-loader',
-          options: {
-            emitFile,
-            outputPath,
-            publicPath: '/assets'
-          }
-        }
-      }
     }
   ];
 }
 
 function getPlugins() {
   const cssPlugins = [
-    new ExtractCssChunks({
-      filename: isProduction ? '[name]-bundle-[hash:8].css' : '[name].css',
-      chunkFilename: isProduction ? '[id]-chunk-[hash:8].css' : '[id].css',
+    new MiniCssExtractPlugin({
+      filename: isProduction ? '[name]-bundle-[chunkhash:8].css' : '[name].css',
+      chunkFilename: isProduction ? '[id]-chunk-[chunkhash:8].css' : '[id].css',
       ignoreOrder: true
     })
   ];
@@ -167,8 +141,8 @@ function getPlugins() {
   const pluginsForBuild = clientPlugins;
 
   return [
-    new CleanWebpackPlugin(),
     new StatsFilterPlugin(),
+    new CleanWebpackPlugin(),
     ...pluginsForBuild,
 
     new LoadablePlugin(),
@@ -191,8 +165,8 @@ module.exports = {
   output: {
     path: outputPath,
     publicPath: '/',
-    chunkFilename: '[id]-chunk-[hash:8].js',
-    filename: '[name]-bundle-[hash:8].js'
+    chunkFilename: '[id]-chunk-[chunkhash:8].js',
+    filename: '[name]-bundle-[chunkhash:8].js'
   },
 
   resolve: getResolve(),
