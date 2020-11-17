@@ -1,1 +1,1 @@
-export { AuthWrapper } from './authWrapper';
+export * from './authWrapper';

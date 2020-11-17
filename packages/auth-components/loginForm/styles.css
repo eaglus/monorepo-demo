@@ -1,0 +1,21 @@
+.root {
+  max-width: 500px;
+  min-width: 300px;
+  display: grid;
+  column-gap: 4px;
+  row-gap: 4px;
+  grid-template:
+    'l1 i1'
+    'e1'
+    'l2 i2'
+    'e2'
+    'b  b';
+}
+
+.error {
+  color: red;
+}
+
+.error-message {
+  composes: error;
+}

@@ -1,20 +1,33 @@
-import React, { createContext, useMemo, useCallback, FC } from 'react';
+import React, {
+  createContext,
+  useMemo,
+  useCallback,
+  FC,
+  ReactNode
+} from 'react';
 import { useSelector } from 'react-redux';
+import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 
-import { selectAuth, AuthorizationState, signOut } from '@tsp-wl/auth';
-import { matchI, useDispatch } from '@tsp-wl/utils';
+import {
+  selectAuth,
+  AuthorizationState,
+  State as Auth,
+  signOut
+} from '@tsp-wl/auth';
+import { ADTMember, matchI, useDispatch } from '@tsp-wl/utils';
 
 import { LoginForm } from './loginForm';
 
-type ContentWrapper = (content: JSX.Element) => JSX.Element;
+type ContentWrapper = (content: ReactNode) => ReactNode;
 interface AuthWrapperContextType {
-  headerWidget: JSX.Element;
-  contentWrapper: (requireAuthorization: boolean) => ContentWrapper;
+  headerWidget: ReactNode;
+  getContentWrapper: (requireAuthorization: boolean) => ContentWrapper;
 }
 
 export const authWrapperContext = createContext<AuthWrapperContextType>({
   headerWidget: <></>,
-  contentWrapper: () => () => <></>
+  getContentWrapper: () => () => <></>
 });
 
 const { Provider } = authWrapperContext;
@@ -22,19 +35,29 @@ const { Provider } = authWrapperContext;
 export const AuthWrapper: FC<{}> = props => {
   const auth = useSelector(selectAuth);
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const onLogoutClick = useCallback(() => {
-    dispatch(signOut());
-  }, [dispatch]);
+  const onLogoutClick = useCallback(
+    async (e: React.MouseEvent) => {
+      e.preventDefault();
+      await dispatch(signOut());
+      history.push('/');
+    },
+    [dispatch, history]
+  );
 
   const headerWidget = useMemo(() => {
-    const login = () => <a href={'#'}>Login</a>;
-    const logout = () => (
-      <a onClick={onLogoutClick} href={'#'}>
-        Logout
-      </a>
+    const login = () => <Link to={'/login'}>Login</Link>;
+    const logout = (data: ADTMember<Auth, AuthorizationState.Authorized>) => (
+      <span>
+        <span>{data.userId}</span>
+        &nbsp;
+        <a onClick={onLogoutClick} href={'#'}>
+          Logout
+        </a>
+      </span>
     );
-    return matchI(auth)<JSX.Element>({
+    return matchI(auth)<ReactNode>({
       [AuthorizationState.Unauthorized]: login,
       [AuthorizationState.Error]: login,
       [AuthorizationState.Authorized]: logout,
@@ -42,7 +65,9 @@ export const AuthWrapper: FC<{}> = props => {
     });
   }, [auth, onLogoutClick]);
 
-  const contentWrapper = useMemo<AuthWrapperContextType['contentWrapper']>(
+  const getContentWrapper = useMemo<
+    AuthWrapperContextType['getContentWrapper']
+  >(
     () => requireAuthorization => {
       const withLoginForm = (): ContentWrapper => content =>
         requireAuthorization ? <LoginForm /> : content;
@@ -52,7 +77,7 @@ export const AuthWrapper: FC<{}> = props => {
         [AuthorizationState.Error]: withLoginForm,
         [AuthorizationState.Authorized]: () => content => content,
         [AuthorizationState.InProgress]: () => () => (
-          <div>Wait for authorzation...</div>
+          <div>Wait for login/logout...</div>
         )
       });
     },
@@ -62,9 +87,9 @@ export const AuthWrapper: FC<{}> = props => {
   const context = useMemo(
     () => ({
       headerWidget,
-      contentWrapper
+      getContentWrapper
     }),
-    [headerWidget, contentWrapper]
+    [headerWidget, getContentWrapper]
   );
 
   return <Provider value={context}>{props.children}</Provider>;

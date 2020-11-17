@@ -190,5 +190,11 @@ module.exports = {
   watchOptions: {
     ignored: /node_modules/,
     aggregateTimeout: 600
+  },
+  devServer: {
+    port: 8080,
+    historyApiFallback: {
+      index: 'index.html'
+    }
   }
 };
