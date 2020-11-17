@@ -2,5 +2,8 @@
   "private": true,
   "name": "@tsp-wl/profile-components",
   "version": "1.0.0",
-  "main": "index.ts"
+  "main": "index.ts",
+  "dependencies": {
+    "@tsp-wl/profile": "1.0.0"
+  }
 }

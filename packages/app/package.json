@@ -1,7 +1,12 @@
 {
-
   "name": "@tsp-wl/app",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "@tsp-wl/profile-components": "^1.0.0",
+    "@tsp-wl/auth-components": "^1.0.0",
+    "@loadable/component": "^5.14.1",
+    "@types/loadable__component": "^5.13.1"
+  }
 }

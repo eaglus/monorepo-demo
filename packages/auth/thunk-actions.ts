@@ -1,6 +1,6 @@
 import { timeoutPromise } from '@tsp-wl/utils';
 
-import { actions, AuthorizationState, ThunkAction } from './types';
+import { actions, AuthorizationState, storePart, ThunkAction } from './types';
 import { selectAuth } from './selectors';
 
 export const signIn = (
@@ -15,7 +15,13 @@ export const signIn = (
     throw new Error('Assertion failed: incorrect current auth state');
   }
 
-  console.log('login: ', login, 'password (length): ', password.length);
+  console.log(
+    `[${storePart}:signIn]`,
+    'login: ',
+    login,
+    'password (length): ',
+    password.length
+  );
   dispatch(
     actions.set({
       _type: AuthorizationState.InProgress
@@ -43,7 +49,8 @@ export const signOut = (): ThunkAction<void> => async (dispatch, getState) => {
     throw new Error('Assertion failed: incorrect current auth state');
   }
 
-  console.log('logout');
+  console.log(`[${storePart}:signIn] logout`);
+
   dispatch(
     actions.set({
       _type: AuthorizationState.InProgress

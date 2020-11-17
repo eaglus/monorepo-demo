@@ -1,5 +1,7 @@
 import { AnyAction } from 'typescript-fsa';
 
+import { reducerSegment as authReducerSegment } from '@tsp-wl/auth';
+
 import {
   State,
   actions,
@@ -21,5 +23,6 @@ export function reducer(state: State | undefined, action: AnyAction) {
 }
 
 export const reducerSegment: ReducerSegment = {
+  ...authReducerSegment,
   [storePart]: reducer
 };

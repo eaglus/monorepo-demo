@@ -7,6 +7,7 @@ import {
   ThunkActionType,
   ADT
 } from '@tsp-wl/utils';
+import { StoreSegment as AuthStoreSegment } from '@tsp-wl/auth';
 
 export const storePart = '@tsp-wl/profile';
 
@@ -30,14 +31,16 @@ export type State = ADT<{
 
   [ProfileState.InProgress]: {};
 
-  [ProfileState.Error]: { error: ActionError };
+  [ProfileState.Error]: ActionError;
 }>;
 
 export const initialState: State = {
   _type: ProfileState.Empty
 };
 
-export type StoreSegment = StoreSegmentType<State, typeof storePart>;
+export type StoreSegment = StoreSegmentType<State, typeof storePart> &
+  AuthStoreSegment;
+
 export type ReducerSegment = ReducerSegmentType<StoreSegment>;
 export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 

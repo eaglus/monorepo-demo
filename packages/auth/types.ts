@@ -30,7 +30,7 @@ export type State = ADT<{
 
   [AuthorizationState.InProgress]: {};
 
-  [AuthorizationState.Error]: { error: ActionError };
+  [AuthorizationState.Error]: ActionError;
 }>;
 
 export const initialState: State = {

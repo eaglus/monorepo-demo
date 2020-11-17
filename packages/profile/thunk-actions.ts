@@ -1,23 +1,27 @@
 import { camelCase } from 'lodash';
 
-import { timeoutPromise } from '@tsp-wl/utils';
+import { timeoutPromise, assert } from '@tsp-wl/utils';
+import { selectAuth, AuthorizationState } from '@tsp-wl/auth';
 
-import { actions, ProfileState, ThunkAction } from './types';
-import { selectAuth } from './selectors';
+import { actions, ProfileState, storePart, ThunkAction } from './types';
+import { selectProfile } from './selectors';
 
-export const load = (userId: string): ThunkAction<void> => async (
-  dispatch,
-  getState
-) => {
+export const load = (): ThunkAction<void> => async (dispatch, getState) => {
   const auth = selectAuth(getState());
+  const profile = selectProfile(getState());
+
+  assert(auth._type === AuthorizationState.Authorized);
+  const userId = auth.userId;
+
   if (
-    auth._type === ProfileState.Loaded ||
-    auth._type === ProfileState.InProgress
+    profile._type === ProfileState.Loaded ||
+    profile._type === ProfileState.InProgress
   ) {
-    throw new Error('Assertion failed: incorrect current profile state');
+    console.log(`[${storePart}:load] return because loaded or loading`);
+    return;
   }
 
-  console.log('load profile by userId: ', userId);
+  console.log(`[${storePart}:load] load profile by userId: ${userId}`);
   dispatch(
     actions.set({
       _type: ProfileState.InProgress
@@ -31,20 +35,6 @@ export const load = (userId: string): ThunkAction<void> => async (
       userId,
       email: userId + '@email.com',
       name: camelCase(userId) + ' Pupkin'
-    })
-  );
-};
-
-export const unload = (): ThunkAction<void> => async (dispatch, getState) => {
-  const auth = selectAuth(getState());
-  if (auth._type !== ProfileState.Loaded) {
-    return;
-  }
-
-  console.log('unload profile by userId: ', auth.userId);
-  dispatch(
-    actions.set({
-      _type: ProfileState.Empty
     })
   );
 };

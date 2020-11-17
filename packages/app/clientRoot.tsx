@@ -1,6 +1,11 @@
 import { Route, Link, Switch, Redirect } from 'react-router-dom';
+import loadable from '@loadable/component';
 
 import { Layout } from './layout';
+
+const Profile = loadable<{}>(() =>
+  import('@tsp-wl/profile-components').then(module => module.Profile)
+);
 
 export function ClientRoot() {
   return (
@@ -9,6 +14,7 @@ export function ClientRoot() {
         <Route path={'/profile'}>
           <Layout title={'Profile'} requiresAuthorization={true}>
             <Link to={'/'}>{'Navigate to root'}</Link>
+            <Profile />
           </Layout>
         </Route>
         <Route path={'/login'}>

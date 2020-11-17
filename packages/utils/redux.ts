@@ -25,7 +25,7 @@ export type StoreSegmentType<State extends object, Part extends string> = {
 
 export type ReducerSegmentType<StoreSegmentType extends object> = {
   [key in keyof StoreSegmentType]: (
-    state: StoreSegmentType[key],
+    state: StoreSegmentType[key] | undefined,
     action: AnyAction
   ) => StoreSegmentType[key];
 };
