@@ -12,10 +12,12 @@
     'b  b';
 }
 
-.error {
+.error-message {
   color: red;
 }
 
-.error-message {
-  composes: error;
+.submit-button {
+  composes: common from '~@tsp-wl/common-components/button/styles.css';
+  font-style: italic;
+  background-color: darksalmon;
 }

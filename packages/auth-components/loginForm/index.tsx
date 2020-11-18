@@ -46,7 +46,6 @@ export function LoginForm() {
                   onChange={props.input.onChange}
                   onBlur={props.input.onBlur}
                   value={props.input.value}
-                  className={props.meta.valid ? '' : styles.error}
                   type={'input'}
                   disabled={formProps.submitting}
                 />
@@ -67,7 +66,6 @@ export function LoginForm() {
                   onChange={props.input.onChange}
                   onBlur={props.input.onBlur}
                   value={props.input.value}
-                  className={props.meta.valid ? '' : styles.error}
                   type={'password'}
                   disabled={formProps.submitting}
                 />
@@ -79,7 +77,12 @@ export function LoginForm() {
               </>
             )}
           </Field>
-          <Button disabled={formProps.submitting}>Submit</Button>
+          <Button
+            disabled={formProps.submitting}
+            className={styles['submit-button']}
+          >
+            Submit
+          </Button>
         </form>
       )}
     </Form>

@@ -103,15 +103,15 @@ function getRules() {
                 : '[folder]--[local]___[hash:base64:5]'
             }
           }
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            postcssOptions: getPostcssConfig({
-              isProduction
-            })
-          }
         }
+        // {
+        //   loader: 'postcss-loader',
+        //   options: {
+        //     postcssOptions: getPostcssConfig({
+        //       isProduction
+        //     })
+        //   }
+        // }
       ]
     }
   ];

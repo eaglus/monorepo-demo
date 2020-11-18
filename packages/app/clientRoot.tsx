@@ -3,9 +3,7 @@ import loadable from '@loadable/component';
 
 import { Layout } from './layout';
 
-const Profile = loadable<{}>(() =>
-  import('@tsp-wl/profile-components').then(module => module.Profile)
-);
+const Profile = loadable(() => import('./routes/profile'));
 
 export function ClientRoot() {
   return (
