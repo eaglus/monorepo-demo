@@ -7,7 +7,7 @@ import { selectProfile, load, ProfileState } from '@tsp-wl/profile';
 
 import styles from './styles.css';
 
-export const Profile: FC<{}> = () => {
+const ProfileView: FC<{}> = () => {
   const dispatch = useDispatch();
   const auth = useSelector(selectAuth);
   const profile = useSelector(selectProfile);
@@ -35,3 +35,5 @@ export const Profile: FC<{}> = () => {
 
   return <div className={styles.root}>{content}</div>;
 };
+
+export default ProfileView;

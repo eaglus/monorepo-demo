@@ -3,5 +3,16 @@
 }
 
 .title {
+}
+
+.widget {
+  display: flex;
+  align-items: center;
+}
+
+.navigate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-grow: 1;
 }

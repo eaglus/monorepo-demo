@@ -1,4 +1,4 @@
-import { Route, Link, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import loadable from '@loadable/component';
 
 import { Layout } from './layout';
@@ -11,7 +11,6 @@ export function ClientRoot() {
       <Switch>
         <Route path={'/profile'}>
           <Layout title={'Profile'} requiresAuthorization={true}>
-            <Link to={'/'}>{'Navigate to root'}</Link>
             <Profile />
           </Layout>
         </Route>
@@ -21,9 +20,7 @@ export function ClientRoot() {
           </Layout>
         </Route>
         <Route path={'/'}>
-          <Layout title={'Root'} requiresAuthorization={false}>
-            <Link to={'/profile'}>{'Navigate to profile'}</Link>
-          </Layout>
+          <Layout title={'Root'} requiresAuthorization={false} />
         </Route>
       </Switch>
     </div>

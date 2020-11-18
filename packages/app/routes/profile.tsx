@@ -1,3 +1,3 @@
-import { Profile } from '@tsp-wl/profile-components';
+import { ProfileRoot } from '@tsp-wl/profile-components';
 
-export default Profile;
+export default ProfileRoot;

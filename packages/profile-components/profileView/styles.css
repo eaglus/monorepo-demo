@@ -1,0 +1,16 @@
+.root {
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  max-width: 500px;
+  min-width: 300px;
+  display: grid;
+  column-gap: 4px;
+  row-gap: 4px;
+  grid-template:
+    'l1 f1'
+    'l2 f2'
+    'l3 f3';
+}
