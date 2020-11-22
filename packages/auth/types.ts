@@ -42,5 +42,7 @@ export type ReducerSegment = ReducerSegmentType<StoreSegment>;
 export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 
 export const actions = {
-  set: actionFactory<State>('set')
+  set: actionFactory<State>('set'),
+  signIn: actionFactory<{ login: string; password: string; }>('signIn'),
+  signOut: actionFactory<void>('signOut'),
 };

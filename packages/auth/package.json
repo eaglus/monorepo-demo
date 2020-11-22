@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
-    "@tsp-wl/utils": "^1.0.0"
+    "@tsp-wl/utils": "^1.0.0",
+    "@tsp-wl/api": "^1.0.0"
   }
 }
