@@ -20,12 +20,14 @@ export enum ProfileState {
   Error = 'Error'
 }
 
+type ProfileData = {
+  userId: string;
+  name: string;
+  email: string;
+};
+
 export type State = ADT<{
-  [ProfileState.Loaded]: {
-    userId: string;
-    name: string;
-    email: string;
-  };
+  [ProfileState.Loaded]: ProfileData;
 
   [ProfileState.Empty]: {};
 
@@ -38,12 +40,13 @@ export const initialState: State = {
   _type: ProfileState.Empty
 };
 
-export type StoreSegment = StoreSegmentType<State, typeof storePart> &
-  AuthStoreSegment;
+type ProfileStoreSegment = StoreSegmentType<State, typeof storePart>;
+export type StoreSegment = ProfileStoreSegment & AuthStoreSegment;
 
 export type ReducerSegment = ReducerSegmentType<StoreSegment>;
 export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 
 export const actions = {
-  set: actionFactory<State>('set')
+  set: actionFactory<State>('set'),
+  load: actionFactory.async<void, ProfileData, ActionError>('load')
 };

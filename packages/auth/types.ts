@@ -19,12 +19,14 @@ export enum AuthorizationState {
   Error = 'Error'
 }
 
+type AuthData = {
+  accessToken: string;
+  refreshToken: string;
+  userId: string;
+};
+
 export type State = ADT<{
-  [AuthorizationState.Authorized]: {
-    accessToken: string;
-    refreshToken: string;
-    userId: string;
-  };
+  [AuthorizationState.Authorized]: AuthData;
 
   [AuthorizationState.Unauthorized]: {};
 
@@ -43,6 +45,10 @@ export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 
 export const actions = {
   set: actionFactory<State>('set'),
-  signIn: actionFactory<{ login: string; password: string; }>('signIn'),
-  signOut: actionFactory<void>('signOut'),
+  signIn: actionFactory.async<
+    { login: string; password: string },
+    AuthData,
+    ActionError
+  >('signIn'),
+  signOut: actionFactory.async<void, void, ActionError>('signOut')
 };

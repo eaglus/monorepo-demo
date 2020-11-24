@@ -4,3 +4,4 @@ export * from './selectors';
 export * from './thunk-actions';
 export { reducerSegment } from './reducer';
 export { middlewares } from './middleware';
+export { profileEpic } from './epic-actions';

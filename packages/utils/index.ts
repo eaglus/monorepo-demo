@@ -6,3 +6,4 @@ export * from './adt';
 export * from './validate';
 export * from './assert';
 export * from './epicR';
+export * from './epics';

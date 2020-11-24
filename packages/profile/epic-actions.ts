@@ -1,9 +1,9 @@
-import { ApiDeps } from '@tsp-wl/api';
+import { LoggerDeps } from '@tsp-wl/logger';
 import { Epic } from '@tsp-wl/utils';
 
 import { StoreSegment } from './types';
 
-export const authEpic: Epic<StoreSegment, ApiDeps> = (
+export const profileEpic: Epic<StoreSegment, LoggerDeps> = (
   _actions$,
   _state$,
   _deps
