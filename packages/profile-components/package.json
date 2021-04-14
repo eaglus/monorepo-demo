@@ -1,9 +1,14 @@
 {
-  "private": true,
   "name": "@tsp-wl/profile-components",
+  "type": "module",
+  "sideEffects": false,
+  "private": true,
   "version": "1.0.0",
-  "main": "index.ts",
+  "module": "index.ts",
   "dependencies": {
-    "@tsp-wl/profile": "1.0.0"
+    "@tsp-wl/profile": "^1.0.0",
+    "@tsp-wl/auth": "^1.0.0",
+    "@tsp-wl/utils": "^1.0.0",
+    "@tsp-wl/common-components": "^1.0.0"
   }
 }

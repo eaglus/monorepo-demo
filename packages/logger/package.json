@@ -1,5 +1,5 @@
 {
-  "name": "@tsp-wl/profile",
+  "name": "@tsp-wl/logger",
   "type": "module",
   "sideEffects": false,
   "private": true,

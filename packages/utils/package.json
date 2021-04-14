@@ -1,6 +1,8 @@
 {
   "name": "@tsp-wl/utils",
-  "version": "1.0.0",
+  "type": "module",
+  "sideEffects": false,
   "private": true,
-  "main": "index.ts"
+  "version": "1.0.0",
+  "module": "index.ts"
 }

@@ -5,6 +5,7 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const LoadablePlugin = require('@loadable/webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const webpack = require('webpack');
 
 const { merge } = require('lodash');
@@ -53,7 +54,7 @@ function getResolve() {
 function getEntry() {
   const hmrEntry = enableHmr ? ['react-hot-loader/patch'] : [];
 
-  const entryPoint = path.resolve(__dirname, '../packages/app/index.tsx');
+  const entryPoint = path.resolve(__dirname, '../packages/app/index.ts');
 
   return [...hmrEntry, entryPoint];
 }
@@ -103,15 +104,15 @@ function getRules() {
                 : '[folder]--[local]___[hash:base64:5]'
             }
           }
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            postcssOptions: getPostcssConfig({
+              isProduction
+            })
+          }
         }
-        // {
-        //   loader: 'postcss-loader',
-        //   options: {
-        //     postcssOptions: getPostcssConfig({
-        //       isProduction
-        //     })
-        //   }
-        // }
       ]
     }
   ];
@@ -141,6 +142,7 @@ function getPlugins() {
   const pluginsForBuild = clientPlugins;
 
   return [
+    new BundleAnalyzerPlugin(),
     new StatsFilterPlugin(),
     new CleanWebpackPlugin(),
     ...pluginsForBuild,
@@ -196,5 +198,16 @@ module.exports = {
     historyApiFallback: {
       index: 'index.html'
     }
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    },
+    // get readable names in production too
+    chunkIds: 'named',
+    moduleIds: 'named',
+    // enable some optimizations in dev mode too for showcasing
+    sideEffects: true,
+    usedExports: true
   }
 };

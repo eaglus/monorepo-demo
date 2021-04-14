@@ -2,9 +2,11 @@ import { useCallback } from 'react';
 import { Form, Field } from 'react-final-form';
 import { object as objectT, string as stringT } from 'yup';
 
-import { signIn } from '@tsp-wl/auth';
+//import { signIn } from '@tsp-wl/auth';
+import { authActions } from '@tsp-wl/auth';
 import { Button, Input } from '@tsp-wl/common-components';
-import { useDispatch, useSchemaValidation } from '@tsp-wl/utils';
+import { useSchemaValidation } from '@tsp-wl/utils';
+import { useDispatch } from '@tsp-wl/utils';
 
 import styles from './styles.css';
 
@@ -27,7 +29,8 @@ export function LoginForm() {
   const dispatch = useDispatch();
 
   const onSubmit = useCallback(
-    (values: FormValues) => dispatch(signIn(values.login, values.password)),
+    //(values: FormValues) => dispatch(signIn(values.login, values.password)),
+    (values: FormValues) => dispatch(authActions.signIn.started(values)),
     [dispatch]
   );
 

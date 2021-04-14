@@ -9,13 +9,16 @@ import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router';
 import { Link } from 'react-router-dom';
 
+//import { signOut } from '@tsp-wl/auth';
+
 import {
   selectAuth,
   AuthorizationState,
   State as Auth,
-  signOut
+  authActions
 } from '@tsp-wl/auth';
-import { ADTMember, matchI, useDispatch } from '@tsp-wl/utils';
+import { ADTMember, matchI } from '@tsp-wl/utils';
+import { useDispatch } from '@tsp-wl/utils';
 
 import { LoginForm } from './loginForm';
 
@@ -40,7 +43,8 @@ export const AuthWrapper: FC<{}> = props => {
   const onLogoutClick = useCallback(
     async (e: React.MouseEvent) => {
       e.preventDefault();
-      await dispatch(signOut());
+      dispatch(authActions.signOut.started());
+      //await dispatch(signOut());
       history.push('/');
     },
     [dispatch, history]

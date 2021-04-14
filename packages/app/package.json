@@ -1,8 +1,10 @@
 {
   "name": "@tsp-wl/app",
-  "version": "1.0.0",
+  "type": "module",
+  "sideEffects": false,
   "private": true,
-  "main": "index.js",
+  "version": "1.0.0",
+  "module": "index.tsx",
   "dependencies": {
     "@tsp-wl/profile-components": "^1.0.0",
     "@tsp-wl/auth-components": "^1.0.0",

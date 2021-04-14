@@ -1,12 +1,49 @@
+import { from } from 'rxjs';
+import { switchMap, catchError, map } from 'rxjs/operators';
+
 import { ApiDeps } from '@tsp-wl/api';
-import { Epic } from '@tsp-wl/utils';
+import { Epic, ofActionPayload, combineEpics } from '@tsp-wl/utils';
 
-import { StoreSegment } from './types';
+import { StoreSegment, actions, AuthData } from './types';
 
-export const authEpic: Epic<StoreSegment, ApiDeps> = (
-  _actions$,
-  _state$,
-  _deps
-) => {
-  return _actions$;
-};
+const signInEpic: Epic<StoreSegment, ApiDeps> = (actions$, _state$, deps) =>
+  actions$.pipe(
+    ofActionPayload(actions.signIn.started),
+    switchMap(params =>
+      from(
+        deps.api.call<AuthData>('sign-in', [params])
+      ).pipe(
+        map(result =>
+          actions.signIn.done({
+            params,
+            result
+          })
+        ),
+        catchError(error => [
+          actions.signIn.failed({
+            params,
+            error
+          })
+        ])
+      )
+    )
+  );
+
+const signOutEpic: Epic<StoreSegment, ApiDeps> = (actions$, _state$, deps) =>
+  actions$.pipe(
+    ofActionPayload(actions.signOut.started),
+    switchMap(() =>
+      from(deps.api.call('sign-out', [])).pipe(
+        map(() => actions.signOut.done({})),
+        catchError(error => [
+          actions.signOut.failed({
+            error
+          })
+        ])
+      )
+    )
+  );
+
+export const authEpic = combineEpics([signInEpic, signOutEpic]);
+
+export const epics = [authEpic];

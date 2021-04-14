@@ -3,7 +3,7 @@ module.exports = ({ isProduction }) => {
     plugins: [
       require('postcss-import'),
       require('postcss-mixins')(),
-      require('precss')(),
+      //require('precss')(), - TODO: режет @tsp-wl в composes: Unable to find property @tsp-wl in .submit-button
       require('postcss-preset-env')({
         autoprefixer: false
       }),

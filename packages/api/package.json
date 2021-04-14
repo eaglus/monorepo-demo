@@ -1,6 +1,9 @@
 {
   "name": "@tsp-wl/api",
+  "type": "module",
+  "sideEffects": false,
+  "private": true,
   "version": "1.0.0",
-  "main": "index.ts",
+  "module": "index.ts",
   "license": "MIT"
 }

@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash';
+import { camelCase } from 'lodash-es';
 
 import { timeoutPromise, assert } from '@tsp-wl/utils';
 import { selectAuth, AuthorizationState } from '@tsp-wl/auth';

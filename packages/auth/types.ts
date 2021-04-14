@@ -1,11 +1,11 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
+import { ADT } from '@tsp-wl/utils';
 import {
   ActionError,
   ReducerSegmentType,
   StoreSegmentType,
-  ThunkActionType,
-  ADT
+  ThunkActionType
 } from '@tsp-wl/utils';
 
 export const storePart = '@tsp-wl/auth';
@@ -19,11 +19,16 @@ export enum AuthorizationState {
   Error = 'Error'
 }
 
-type AuthData = {
+export interface AuthParams {
+  login: string;
+  password: string;
+}
+
+export interface AuthData {
   accessToken: string;
   refreshToken: string;
   userId: string;
-};
+}
 
 export type State = ADT<{
   [AuthorizationState.Authorized]: AuthData;
@@ -46,7 +51,7 @@ export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 export const actions = {
   set: actionFactory<State>('set'),
   signIn: actionFactory.async<
-    { login: string; password: string },
+    AuthParams,
     AuthData,
     ActionError
   >('signIn'),

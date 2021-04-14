@@ -45,7 +45,7 @@ module.exports = api => {
   };
 
   if (verbose) {
-    console.log('Babel env: ', 'prod = ', prod);
+    console.error('Babel env: ', 'prod = ', prod);
   }
 
   return config;

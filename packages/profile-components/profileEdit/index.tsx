@@ -1,20 +1,29 @@
 import { useEffect, FC, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useDispatch, assert, matchI } from '@tsp-wl/utils';
+import { assert, matchI } from '@tsp-wl/utils';
+import { useDispatch } from '@tsp-wl/utils';
 import { selectAuth, AuthorizationState } from '@tsp-wl/auth';
-import { selectProfile, load, ProfileState } from '@tsp-wl/profile';
+//import { load } from '@tsp-wl/profile';
+import { selectProfile, ProfileState, profileActions } from '@tsp-wl/profile';
+import { treeShakingTest11, treeShakingTest31 } from '@tsp-wl/utils';
+import { epicR3, epicR2 } from '@tsp-wl/utils';
 
 import styles from './styles.css';
 
 const ProfileEdit: FC<{}> = () => {
+  epicR3();
+  epicR2();
+
   const dispatch = useDispatch();
   const auth = useSelector(selectAuth);
   const profile = useSelector(selectProfile);
   assert(auth._type === AuthorizationState.Authorized);
 
   useEffect(() => {
-    dispatch(load());
+    treeShakingTest11();
+    treeShakingTest31();
+    dispatch(profileActions.load.started());
   }, [dispatch, auth]);
 
   const onChange = useCallback(() => {

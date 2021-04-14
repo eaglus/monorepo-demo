@@ -1,11 +1,11 @@
 import { actionCreatorFactory } from 'typescript-fsa';
 
+import { ADT } from '@tsp-wl/utils';
 import {
   ActionError,
   ReducerSegmentType,
   StoreSegmentType,
-  ThunkActionType,
-  ADT
+  ThunkActionType
 } from '@tsp-wl/utils';
 import { StoreSegment as AuthStoreSegment } from '@tsp-wl/auth';
 
@@ -20,7 +20,7 @@ export enum ProfileState {
   Error = 'Error'
 }
 
-type ProfileData = {
+export type ProfileData = {
   userId: string;
   name: string;
   email: string;

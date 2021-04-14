@@ -1,9 +1,12 @@
 import { useEffect, FC } from 'react';
 import { useSelector } from 'react-redux';
 
-import { useDispatch, assert, matchI } from '@tsp-wl/utils';
+import { assert, matchI } from '@tsp-wl/utils';
+import { useDispatch } from '@tsp-wl/utils';
 import { selectAuth, AuthorizationState } from '@tsp-wl/auth';
-import { selectProfile, load, ProfileState } from '@tsp-wl/profile';
+//import { load } from '@tsp-wl/profile';
+import { selectProfile, ProfileState, profileActions } from '@tsp-wl/profile';
+import { treeShakingTest21, treeShakingTest31 } from '@tsp-wl/utils';
 
 import styles from './styles.css';
 
@@ -14,7 +17,9 @@ const ProfileView: FC<{}> = () => {
   assert(auth._type === AuthorizationState.Authorized);
 
   useEffect(() => {
-    dispatch(load());
+    treeShakingTest21();
+    treeShakingTest31();
+    dispatch(profileActions.load.started());
   }, [dispatch, auth]);
 
   const content = matchI(profile)({

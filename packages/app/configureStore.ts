@@ -4,58 +4,91 @@ import {
   applyMiddleware,
   Middleware
 } from 'redux';
-import { AnyAction } from 'typescript-fsa';
-import { from } from 'rxjs';
-import { ActionsObservable } from 'redux-observable';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { uniq, flattenDeep } from 'lodash';
+import { uniq, flattenDeep, camelCase } from 'lodash-es';
 
 import thunk from '@tsp-private/redux-thunk';
 
-import { combineEpics } from '@tsp-wl/utils';
+import { timeoutPromise } from '@tsp-wl/utils';
+import { combineEpics, createEpicMiddleware } from '@tsp-wl/utils';
 
 import {
   reducerSegment as profileReducerSegment,
   middlewares as profileMiddlewares,
   StoreSegment as ProfileStoreSegment,
-  profileEpic
+  epics
 } from '@tsp-wl/profile';
 
-import { authEpic } from '@tsp-wl/auth';
-
 type StoreSegment = ProfileStoreSegment;
-
-const rootEpic = combineEpics([profileEpic, authEpic]);
-
-rootEpic(
-  ActionsObservable.of<AnyAction>({ type: 'a' }),
-  from([]),
-  {
-    api: {
-      call<Result>(_method: string, _args: unknown[]): Promise<Result> {
-        return Promise.resolve(null) as any;
-      }
-    },
-    logger: {
-      log(_category: string, ..._args) {
-        console.log(_category);
-      }
-    }
-  }
-);
 
 const reducer = combineReducers({
   ...profileReducerSegment
 });
 
 const middlewares = (uniq(
-  flattenDeep([thunk, ...profileMiddlewares])
+  flattenDeep(profileMiddlewares)
 ) as unknown) as Middleware<unknown, StoreSegment>[];
 
 export function configureStore() {
-  return createStore(
+  const rootEpic = combineEpics(epics);
+  const epicMiddleware = createEpicMiddleware(rootEpic, {
+    dependencies: {
+      logger: {
+        log(category: string, ...args: unknown[]) {
+          console.log(category, args);
+        }
+      },
+      api: {
+        call<Result>(method: string, args: unknown[]): Promise<Result> {
+          switch (method) {
+            case 'sign-in': {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const arg: any = args[0];
+              return timeoutPromise(1000).then(
+                () =>
+                  (({
+                    accessToken: 'accessToken',
+                    refreshToken: 'refreshToken',
+                    userId: arg.login
+                  } as unknown) as Result)
+              );
+            }
+
+            case 'sign-out': {
+              return timeoutPromise(1000).then(
+                () => (({} as unknown) as Result)
+              );
+            }
+
+            case 'profile': {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const userId: any = args[0];
+
+              return timeoutPromise(1000).then(
+                () =>
+                  (({
+                    userId,
+                    email: userId + '@email.com',
+                    name: camelCase(userId) + ' Pupkin'
+                  } as unknown) as Result)
+              );
+            }
+          }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          return Promise.resolve(null as any);
+        }
+      }
+    }
+  });
+
+  const store = createStore(
     reducer,
     undefined,
-    composeWithDevTools(applyMiddleware(...middlewares))
+    composeWithDevTools(
+      applyMiddleware(thunk, epicMiddleware.middleware, ...middlewares)
+    )
   );
+  epicMiddleware.run();
+
+  return store;
 }

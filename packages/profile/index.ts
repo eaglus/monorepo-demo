@@ -1,7 +1,7 @@
 export type { StoreSegment, State } from './types';
-export { actions as authActions, ProfileState } from './types';
+export { actions as profileActions, ProfileState } from './types';
 export * from './selectors';
 export * from './thunk-actions';
 export { reducerSegment } from './reducer';
 export { middlewares } from './middleware';
-export { profileEpic } from './epic-actions';
+export { epics } from './epic-actions';
