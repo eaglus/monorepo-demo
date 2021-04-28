@@ -1,12 +1,8 @@
-import { Observable, OperatorFunction, ObservableInput, ObservedValueOf, from } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { Observable, from } from 'rxjs';
 import { ActionCreator, AnyAction } from 'typescript-fsa';
 
 import * as R from 'fp-ts/lib/Reader';
-import { Reader } from 'fp-ts/lib/Reader';
-import { pipe } from 'fp-ts/lib/pipeable';
-import { ReaderObservableEither } from 'fp-ts-rxjs/lib/ReaderObservableEither';
-import { ReaderObservable } from 'fp-ts-rxjs/lib/ReaderObservable';
+import { pipe } from 'fp-ts/lib/function';
 import { readerObservable as RO } from 'fp-ts-rxjs/lib';
 
 import { ofActionPayload } from '@tsp-wl/utils/redux-utils';
@@ -14,7 +10,12 @@ import { ofActionPayload } from '@tsp-wl/utils/redux-utils';
 import { authActions, AuthParams, AuthData } from '@tsp-wl/auth';
 
 import { pipeR } from './pipeR';
-import { applyRxOperator, mapErrorR, catchErrorR, switchMapR, switchMapR2 } from './operatorsR';
+import {
+  applyRxOperator,
+  mapErrorR,
+  catchErrorR,
+  switchMapR
+} from './operatorsR';
 
 //======== logger.ts ========
 interface Logger {
@@ -103,14 +104,15 @@ const epicAuth = pipeR(
           result: authData
         })
       ),
-      mapErrorR(error => authActions.signIn.failed({
-        params,
-        error
-      }))
+      mapErrorR(error =>
+        authActions.signIn.failed({
+          params,
+          error
+        })
+      )
     )
   )
 );
-
 
 const epicAuth1 = pipeR(
   ofActionPayloadR(authActions.signIn.started),
@@ -124,12 +126,12 @@ const epicAuth1 = pipeR(
         })
       ),
       catchErrorR(error =>
-        RO.of(
-          [authActions.signIn.failed({
+        RO.of([
+          authActions.signIn.failed({
             params,
             error
-          })]
-        )
+          })
+        ])
       )
     )
   )

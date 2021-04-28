@@ -1,6 +1,8 @@
 import { ReaderObservable } from 'fp-ts-rxjs/lib/ReaderObservable';
 
-export declare function pipeR<A, R>(a: ReaderObservable<A, R>): ReaderObservable<A, R>;
+export declare function pipeR<A, R>(
+  a: ReaderObservable<A, R>
+): ReaderObservable<A, R>;
 
 export declare function pipeR<A, B, R1, R2, R3>(
   a: ReaderObservable<R1, A>,
@@ -20,7 +22,22 @@ export declare function pipeR<A, B, C, D, R1, R2, R3, R4, R5, R6, R7>(
   cd: (c: ReaderObservable<R6, C>) => ReaderObservable<R7, D>
 ): ReaderObservable<R1 & R2 & R3 & R4 & R5 & R6 & R7, D>;
 
-export declare function pipeR<A, B, C, D, E, R1, R2, R3, R4, R5, R6, R7, R8, R9>(
+export declare function pipeR<
+  A,
+  B,
+  C,
+  D,
+  E,
+  R1,
+  R2,
+  R3,
+  R4,
+  R5,
+  R6,
+  R7,
+  R8,
+  R9
+>(
   a: ReaderObservable<R1, A>,
   ab: (a: ReaderObservable<R2, A>) => ReaderObservable<R3, B>,
   bc: (b: ReaderObservable<R4, B>) => ReaderObservable<R5, C>,

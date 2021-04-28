@@ -33,4 +33,3 @@ export type ThunkActionType<StoreSegments extends object, T = unknown> = (
   dispatch: Dispatch,
   getState: () => StoreSegments
 ) => T | Promise<T>;
-

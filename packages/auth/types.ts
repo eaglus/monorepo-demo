@@ -50,10 +50,6 @@ export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
 
 export const actions = {
   set: actionFactory<State>('set'),
-  signIn: actionFactory.async<
-    AuthParams,
-    AuthData,
-    ActionError
-  >('signIn'),
+  signIn: actionFactory.async<AuthParams, AuthData, ActionError>('signIn'),
   signOut: actionFactory.async<void, void, ActionError>('signOut')
 };

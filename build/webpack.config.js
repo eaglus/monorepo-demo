@@ -15,7 +15,7 @@ const getPostcssConfig = require('./postcss.config');
 const isProduction = process.env.NODE_ENV === 'production';
 const emitAssets = process.env.ASSETS;
 
-const enableHmr = !isProduction;
+const enableHmr = false && !isProduction;
 const mode = isProduction ? 'production' : 'development';
 const reactEnvironment = isProduction ? 'production' : 'development';
 const target = 'web';
@@ -142,7 +142,7 @@ function getPlugins() {
   const pluginsForBuild = clientPlugins;
 
   return [
-    new BundleAnalyzerPlugin(),
+    //new BundleAnalyzerPlugin(),
     new StatsFilterPlugin(),
     new CleanWebpackPlugin(),
     ...pluginsForBuild,

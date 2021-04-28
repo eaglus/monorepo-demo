@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 
 import { ValidationErrors } from 'final-form';
-import { Schema, ValidationError } from 'yup';
+import { BaseSchema, ValidationError } from 'yup';
 
 function formatErrors(
   result: Record<string, string>,
@@ -11,7 +11,7 @@ function formatErrors(
   if (error.inner?.length) {
     return error.inner.reduce(
       (res, innerError) =>
-        formatErrors(res, innerError, error.path ? error.path + '.' : ''),
+        formatErrors(res, innerError, error.path ? error.path + '.' : '') || {},
       result
     );
   } else {
@@ -22,7 +22,7 @@ function formatErrors(
   }
 }
 
-export function useSchemaValidation(schema: Schema<unknown>) {
+export function useSchemaValidation(schema: BaseSchema<unknown>) {
   return useCallback(
     (value: Record<string, unknown>) => {
       try {
