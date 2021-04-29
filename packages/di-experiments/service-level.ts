@@ -1,21 +1,19 @@
-import { Observable, from } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ActionCreator, AnyAction } from 'typescript-fsa';
 
-import * as R from 'fp-ts/lib/Reader';
-import { pipe } from 'fp-ts/lib/function';
-import { readerObservable as RO } from 'fp-ts-rxjs/lib';
+import * as R from 'fp-ts/Reader';
+import { pipe } from 'fp-ts/function';
+import { readerObservable as RO } from 'fp-ts-rxjs';
+import { ReaderObservable } from 'fp-ts-rxjs/ReaderObservable';
 
 import { ofActionPayload } from '@tsp-wl/utils/redux-utils';
-//import { profileActions } from '@tsp-wl/profile';
+import { ProfileData, profileActions } from '@tsp-wl/profile';
 import { authActions, AuthParams, AuthData } from '@tsp-wl/auth';
 
 import { pipeR } from './pipeR';
-import {
-  applyRxOperator,
-  mapErrorR,
-  catchErrorR,
-  switchMapR
-} from './operatorsR';
+import { applyRxOperator, mapErrorR, switchMapR, mapR } from './operatorsR';
+import { sequenceReaderGen } from './sequenceReaderGen';
+import { concatToLastR } from './concatToLastR';
 
 //======== logger.ts ========
 interface Logger {
@@ -26,56 +24,76 @@ interface LoggerDep {
   logger: Logger;
 }
 
-const askLogger = <Deps extends LoggerDep = LoggerDep>() =>
+const askLogger = () =>
   pipe(
-    R.ask<Deps>(),
-    R.map(deps => deps.logger)
+    RO.ask<LoggerDep>(),
+    RO.map(deps => deps.logger)
   );
-
-const createConsoleLoggerDep = (): LoggerDep => ({
-  logger: {
-    log: console.log
-  }
-});
 
 //========= api-transort.ts =====
 interface ApiTransport {
-  call: <R>(method: string, ...params: unknown[]) => Observable<R>;
+  call: <Result>(
+    method: string,
+    ...params: unknown[]
+  ) => ReaderObservable<LoggerDep, Result>;
 }
 
 interface ApiTransportDep {
   transport: ApiTransport;
 }
 
-const createFakeTransport = () =>
+const askTransport = () =>
   pipe(
-    askLogger(),
-    R.map(logger => {
-      const result: ApiTransport = {
-        call(method, params) {
-          logger.log(method, params);
-          return from([]);
-        }
-      };
-      return result;
-    })
+    RO.ask<ApiTransportDep>(),
+    RO.map(deps => deps.transport)
   );
 
-const askTransport = <Deps extends ApiTransportDep = ApiTransportDep>() =>
+//============ auth-data.ts ===============
+
+interface AuthDataDep {
+  getAuthData: () => AuthData;
+}
+
+const askAuthData = () =>
   pipe(
-    R.ask<Deps>(),
-    R.map(deps => deps.transport)
+    RO.ask<AuthDataDep>(),
+    RO.map(deps => deps.getAuthData)
   );
 
-//========= api-transort.ts =====
+//============ api.ts ===============
+
+interface ApiService {
+  signIn(
+    params: AuthParams
+  ): ReaderObservable<ApiTransportDep & LoggerDep, AuthData>;
+
+  signOut(): ReaderObservable<ApiTransportDep & LoggerDep & AuthDataDep, void>;
+
+  fetchProfile(): ReaderObservable<
+    ApiTransportDep & LoggerDep & AuthDataDep,
+    ProfileData
+  >;
+}
+
+interface ApiServiceDep {
+  apiService: ApiService;
+}
+
+const askApiService = () =>
+  pipe(
+    RO.ask<ApiServiceDep>(),
+    RO.map(deps => deps.apiService)
+  );
+
+//========= actions-dep.ts =====
 
 interface ActionsDep {
   actions$: Observable<AnyAction>;
 }
 
-const askActions = <Deps extends ActionsDep = ActionsDep>() =>
+const askActions = () =>
   pipe(
-    R.ask<Deps>(),
+    R.ask<ActionsDep>(),
     R.map(deps => deps.actions$)
   );
 
@@ -84,25 +102,37 @@ const ofActionPayloadR = <Payload>(actionCreator: ActionCreator<Payload>) =>
 
 //============ epic.ts ===============
 
-const fetchSignIn = (params: AuthParams) =>
-  pipeR(
-    RO.ask<ApiTransportDep & LoggerDep>(),
-    RO.chain(({ transport, logger }) => {
-      logger.log('Sign in as', params.login);
-      return RO.fromObservable(transport.call<AuthData>('sign-in', params));
-    })
-  );
-
 const epicAuth = pipeR(
   ofActionPayloadR(authActions.signIn.started),
   switchMapR(params =>
     pipeR(
-      fetchSignIn(params),
-      RO.map(authData =>
-        authActions.signIn.done({
-          params,
-          result: authData
-        })
+      concatToLastR(
+        RO.of(authActions.signIn.started(params)),
+        pipeR(
+          askApiService(),
+          switchMapR(api => api.signIn(params)),
+          mapR(authData =>
+            authActions.signIn.done({
+              params,
+              result: authData
+            })
+          )
+        ),
+        RO.of(profileActions.load.started()),
+        pipeR(
+          askApiService(),
+          switchMapR(api => api.fetchProfile()),
+          mapR(profileData =>
+            profileActions.load.done({
+              result: profileData
+            })
+          ),
+          mapErrorR(error =>
+            profileActions.load.failed({
+              error
+            })
+          )
+        )
       ),
       mapErrorR(error =>
         authActions.signIn.failed({
@@ -114,25 +144,52 @@ const epicAuth = pipeR(
   )
 );
 
-const epicAuth1 = pipeR(
-  ofActionPayloadR(authActions.signIn.started),
-  switchMapR(params =>
+////////////
+
+const createConsoleLoggerDep = (): LoggerDep => ({
+  logger: {
+    log: console.log
+  }
+});
+
+const createFakeTransport = (): ApiTransport => ({
+  call: (method, params) =>
     pipeR(
-      fetchSignIn(params),
-      RO.map(authData =>
-        authActions.signIn.done({
-          params,
-          result: authData
-        })
-      ),
-      catchErrorR(error =>
-        RO.of([
-          authActions.signIn.failed({
-            params,
-            error
-          })
-        ])
-      )
+      askLogger(),
+      switchMapR(logger => {
+        logger.log('fake transport', method, params);
+        return RO.zero;
+      })
     )
-  )
-);
+});
+
+const createApiService = (): ApiService => ({
+  signIn: params =>
+    pipeR(
+      sequenceReaderGen(askLogger(), askTransport()),
+      switchMapR(([logger, transport]) => {
+        logger.log('api service', 'signing in', params.login);
+        return transport.call<AuthData>('signIn', params);
+      })
+    ),
+
+  signOut: () =>
+    pipeR(
+      sequenceReaderGen(askLogger(), askTransport(), askAuthData()),
+      switchMapR(([logger, transport, getAuthData]) => {
+        const authData = getAuthData();
+        logger.log('api service', 'signing out', authData.userId);
+        return transport.call<void>('signOut', authData);
+      })
+    ),
+
+  fetchProfile: () =>
+    pipeR(
+      sequenceReaderGen(askLogger(), askTransport(), askAuthData()),
+      switchMapR(([logger, transport, getAuthData]) => {
+        const authData = getAuthData();
+        logger.log('api service', 'fetch profile', authData.userId);
+        return transport.call<ProfileData>('getProfile', authData);
+      })
+    )
+});

@@ -4,11 +4,17 @@ import {
   ObservableInput,
   ObservedValueOf
 } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
-import { ReaderObservable } from 'fp-ts-rxjs/lib/ReaderObservable';
+import {
+  catchError,
+  switchMap,
+  mergeMap,
+  map,
+  concatMap
+} from 'rxjs/operators';
+import { ReaderObservable } from 'fp-ts-rxjs/ReaderObservable';
 
-import * as R from 'fp-ts/lib/Reader';
-import { Reader } from 'fp-ts/lib/Reader';
+import * as R from 'fp-ts/Reader';
+import { Reader } from 'fp-ts/Reader';
 
 export const applyRxOperator = <In, Out>(operator: OperatorFunction<In, Out>) =>
   R.map(operator);
@@ -48,6 +54,38 @@ export const switchMapR = <In, Deps, O extends ObservableInput<any>>(
 ) =>
   R.chain<Observable<In>, Deps, Observable<ObservedValueOf<O>>>(obs => deps =>
     obs.pipe(switchMap((value, index) => project(value, index)(deps)))
+  );
+
+export const chainR = switchMapR;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const mergeMapR = <In, Deps, O extends ObservableInput<any>>(
+  project: (value: In, index: number) => Reader<Deps, O>
+) =>
+  R.chain<Observable<In>, Deps, Observable<ObservedValueOf<O>>>(obs => deps =>
+    obs.pipe(mergeMap((value, index) => project(value, index)(deps)))
+  );
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const concatMapR = <In, Deps, O extends ObservableInput<any>>(
+  project: (value: In, index: number) => Reader<Deps, O>
+) =>
+  R.chain<Observable<In>, Deps, Observable<ObservedValueOf<O>>>(obs => deps =>
+    obs.pipe(concatMap((value, index) => project(value, index)(deps)))
+  );
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const concatR = <In, Deps, O extends ObservableInput<any>>(
+  project: (value: In, index: number) => Reader<Deps, O>
+) =>
+  R.chain<Observable<In>, Deps, Observable<ObservedValueOf<O>>>(obs => deps =>
+    obs.pipe(concatMap((value, index) => project(value, index)(deps)))
+  );
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const mapR = <In, Deps, O>(project: (value: In, index: number) => O) =>
+  R.chain<Observable<In>, Deps, Observable<O>>(obs => () =>
+    obs.pipe(map((value, index) => project(value, index)))
   );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
