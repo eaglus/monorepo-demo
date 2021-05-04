@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs';
+import { Observable, concat } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { ActionCreator, AnyAction } from 'typescript-fsa';
 
 import * as R from 'fp-ts/Reader';
@@ -10,10 +11,14 @@ import { ofActionPayload } from '@tsp-wl/utils/redux-utils';
 import { ProfileData, profileActions } from '@tsp-wl/profile';
 import { authActions, AuthParams, AuthData } from '@tsp-wl/auth';
 
-import { pipeR } from './pipeR';
-import { applyRxOperator, mapErrorR, switchMapR, mapR } from './operatorsR';
-import { sequenceReaderGen } from './sequenceReaderGen';
-import { concatToLastR } from './concatToLastR';
+import {
+  mapObservable,
+  catchErrorO,
+  switchMapR,
+  mapR,
+  chainWith
+} from './operatorsR';
+import { combineLatestR, concatR, combineWith } from './combineOperatorsR';
 
 //======== logger.ts ========
 interface Logger {
@@ -98,19 +103,31 @@ const askActions = () =>
   );
 
 const ofActionPayloadR = <Payload>(actionCreator: ActionCreator<Payload>) =>
-  pipe(askActions(), applyRxOperator(ofActionPayload(actionCreator)));
+  pipe(askActions(), mapObservable(ofActionPayload(actionCreator)));
 
 //============ epic.ts ===============
 
-const epicAuth = pipeR(
-  ofActionPayloadR(authActions.signIn.started),
-  switchMapR(params =>
-    pipeR(
-      concatToLastR(
+const epicTest = pipe(
+  combineLatestR([
+    askApiService(),
+    ofActionPayloadR(authActions.signIn.started)
+  ]),
+  chainWith(switchMap, ([api, params]) => api.signIn(params))
+);
+
+const epicAuth = pipe(
+  combineLatestR([
+    askApiService(),
+    ofActionPayloadR(authActions.signIn.started)
+  ]),
+  switchMapR(([api, params]) =>
+    pipe(
+      //concatR([
+      combineWith(concat, [
         RO.of(authActions.signIn.started(params)),
-        pipeR(
-          askApiService(),
-          switchMapR(api => api.signIn(params)),
+        RO.of(profileActions.load.started()),
+        pipe(
+          api.signIn(params),
           mapR(authData =>
             authActions.signIn.done({
               params,
@@ -118,28 +135,24 @@ const epicAuth = pipeR(
             })
           )
         ),
-        RO.of(profileActions.load.started()),
-        pipeR(
-          askApiService(),
-          switchMapR(api => api.fetchProfile()),
+        pipe(
+          api.fetchProfile(),
           mapR(profileData =>
             profileActions.load.done({
               result: profileData
             })
-          ),
-          mapErrorR(error =>
-            profileActions.load.failed({
-              error
-            })
           )
         )
-      ),
-      mapErrorR(error =>
+      ]),
+      catchErrorO(error => [
         authActions.signIn.failed({
           params,
           error
+        }),
+        profileActions.load.failed({
+          error
         })
-      )
+      ])
     )
   )
 );
@@ -154,7 +167,7 @@ const createConsoleLoggerDep = (): LoggerDep => ({
 
 const createFakeTransport = (): ApiTransport => ({
   call: (method, params) =>
-    pipeR(
+    pipe(
       askLogger(),
       switchMapR(logger => {
         logger.log('fake transport', method, params);
@@ -165,8 +178,8 @@ const createFakeTransport = (): ApiTransport => ({
 
 const createApiService = (): ApiService => ({
   signIn: params =>
-    pipeR(
-      sequenceReaderGen(askLogger(), askTransport()),
+    pipe(
+      combineLatestR([askLogger(), askTransport()]),
       switchMapR(([logger, transport]) => {
         logger.log('api service', 'signing in', params.login);
         return transport.call<AuthData>('signIn', params);
@@ -174,8 +187,8 @@ const createApiService = (): ApiService => ({
     ),
 
   signOut: () =>
-    pipeR(
-      sequenceReaderGen(askLogger(), askTransport(), askAuthData()),
+    pipe(
+      combineLatestR([askLogger(), askTransport(), askAuthData()]),
       switchMapR(([logger, transport, getAuthData]) => {
         const authData = getAuthData();
         logger.log('api service', 'signing out', authData.userId);
@@ -184,8 +197,8 @@ const createApiService = (): ApiService => ({
     ),
 
   fetchProfile: () =>
-    pipeR(
-      sequenceReaderGen(askLogger(), askTransport(), askAuthData()),
+    pipe(
+      combineLatestR([askLogger(), askTransport(), askAuthData()]),
       switchMapR(([logger, transport, getAuthData]) => {
         const authData = getAuthData();
         logger.log('api service', 'fetch profile', authData.userId);
