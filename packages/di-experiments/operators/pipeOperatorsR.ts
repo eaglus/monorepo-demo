@@ -3,6 +3,7 @@ import {
   OperatorFunction,
   ObservableInput,
   ObservedValueOf,
+  from
 } from 'rxjs';
 import {
   catchError,
@@ -14,6 +15,7 @@ import {
 
 import * as R from 'fp-ts/Reader';
 import { Reader } from 'fp-ts/Reader';
+import * as RO from 'fp-ts-rxjs/ReaderObservable';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -65,9 +67,17 @@ export const mapObservable = <In, Out>(operator: OperatorFunction<In, Out>) =>
 export const mapErrorR = <Out>(handler: (error: any) => Out) =>
   mapObservable(catchError(error => () => [handler(error)]));
 
-export const catchErrorO = <Out>(
-  handler: (error: any) => ObservableInput<Out>
-) => mapObservable(catchError(error => () => handler(error)));
+export const catchErrorO = <In, O extends ObservableInput<any>>(
+  handler: (error: any, caught: Observable<In>) => O
+) => mapObservable(catchError(handler));
+
+export const ofR = RO.of;
+
+export function fromR<R, O extends ObservableInput<any>>(
+  input: O
+): Reader<R, Observable<ObservedValueOf<O>>> {
+  return RO.fromObservable(from(input));
+}
 
 export const concatMapR = chainWithC(concatMap);
 export const mergeMapR = chainWithC(mergeMap);
