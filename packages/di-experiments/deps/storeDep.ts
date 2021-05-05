@@ -5,13 +5,13 @@ import * as R from 'fp-ts/Reader';
 import { pipe } from 'fp-ts/function';
 
 export interface StoreDep<State> {
-  _stateType: State;
+  _stateType?: State;
   state$: Observable<State>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type StateOfStoreDep<O> = O extends StoreDep<any>
-  ? O['_stateType']
+  ? NonNullable<O['_stateType']>
   : never;
 
 export const askState = <State>() =>
