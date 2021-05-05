@@ -3,9 +3,9 @@ import { useSelector } from 'react-redux';
 
 import { assert, matchI } from '@tsp-wl/utils';
 import { useDispatch } from '@tsp-wl/utils';
-import { selectAuth, AuthorizationState } from '@tsp-wl/auth';
+import { selectAuth, AuthStatus } from '@tsp-wl/auth';
 //import { load } from '@tsp-wl/profile';
-import { selectProfile, ProfileState, profileActions } from '@tsp-wl/profile';
+import { selectProfile, ProfileStatus, profileActions } from '@tsp-wl/profile';
 import { treeShakingTest21, treeShakingTest31 } from '@tsp-wl/utils';
 
 import styles from './styles.css';
@@ -14,7 +14,7 @@ const ProfileView: FC<{}> = () => {
   const dispatch = useDispatch();
   const auth = useSelector(selectAuth);
   const profile = useSelector(selectProfile);
-  assert(auth._type === AuthorizationState.Authorized);
+  assert(auth._type === AuthStatus.Authorized);
 
   useEffect(() => {
     treeShakingTest21();
@@ -23,10 +23,10 @@ const ProfileView: FC<{}> = () => {
   }, [dispatch, auth]);
 
   const content = matchI(profile)({
-    [ProfileState.Empty]: () => <></>,
-    [ProfileState.InProgress]: () => <span>Wait for profile loading...</span>,
-    [ProfileState.Error]: error => <span>Error: {error.message}</span>,
-    [ProfileState.Loaded]: profile => (
+    [ProfileStatus.Empty]: () => <></>,
+    [ProfileStatus.InProgress]: () => <span>Wait for profile loading...</span>,
+    [ProfileStatus.Error]: error => <span>Error: {error.message}</span>,
+    [ProfileStatus.Loaded]: profile => (
       <div className={styles.content}>
         <label>Login:</label>
         <span>{profile.userId}</span>

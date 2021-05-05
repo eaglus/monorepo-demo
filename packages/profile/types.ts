@@ -7,13 +7,13 @@ import {
   StoreSegmentType,
   ThunkActionType
 } from '@tsp-wl/utils';
-import { StoreSegment as AuthStoreSegment } from '@tsp-wl/auth';
+import { AuthStoreSegment as AuthStoreSegment } from '@tsp-wl/auth';
 
 export const storePart = '@tsp-wl/profile';
 
 const actionFactory = actionCreatorFactory(storePart);
 
-export enum ProfileState {
+export enum ProfileStatus {
   Loaded = 'Loaded',
   Empty = 'Empty',
   InProgress = 'InProgress',
@@ -26,27 +26,27 @@ export type ProfileData = {
   email: string;
 };
 
-export type State = ADT<{
-  [ProfileState.Loaded]: ProfileData;
+export type ProfileState = ADT<{
+  [ProfileStatus.Loaded]: ProfileData;
 
-  [ProfileState.Empty]: {};
+  [ProfileStatus.Empty]: {};
 
-  [ProfileState.InProgress]: {};
+  [ProfileStatus.InProgress]: {};
 
-  [ProfileState.Error]: ActionError;
+  [ProfileStatus.Error]: ActionError;
 }>;
 
-export const initialState: State = {
-  _type: ProfileState.Empty
+export const initialState: ProfileState = {
+  _type: ProfileStatus.Empty
 };
 
-type ProfileStoreSegment = StoreSegmentType<State, typeof storePart>;
-export type StoreSegment = ProfileStoreSegment & AuthStoreSegment;
+type ProfileStoreSegment = StoreSegmentType<ProfileState, typeof storePart>;
+export type ProfileFullStoreSegment = ProfileStoreSegment & AuthStoreSegment;
 
-export type ReducerSegment = ReducerSegmentType<StoreSegment>;
-export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
+export type ReducerSegment = ReducerSegmentType<ProfileFullStoreSegment>;
+export type ThunkAction<T> = ThunkActionType<ProfileFullStoreSegment, T>;
 
 export const actions = {
-  set: actionFactory<State>('set'),
+  set: actionFactory<ProfileState>('set'),
   load: actionFactory.async<void, ProfileData, ActionError>('load')
 };

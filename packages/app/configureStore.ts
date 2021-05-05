@@ -15,7 +15,7 @@ import { combineEpics, createEpicMiddleware } from '@tsp-wl/utils';
 import {
   reducerSegment as profileReducerSegment,
   middlewares as profileMiddlewares,
-  StoreSegment as ProfileStoreSegment,
+  ProfileFullStoreSegment as ProfileStoreSegment,
   epics
 } from '@tsp-wl/profile';
 

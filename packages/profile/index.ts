@@ -1,5 +1,5 @@
-export type { StoreSegment, State, ProfileData } from './types';
-export { actions as profileActions, ProfileState } from './types';
+export type { ProfileFullStoreSegment, ProfileState, ProfileData } from './types';
+export { actions as profileActions, ProfileStatus } from './types';
 export * from './selectors';
 export * from './thunk-actions';
 export { reducerSegment } from './reducer';

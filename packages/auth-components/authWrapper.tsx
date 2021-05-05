@@ -13,8 +13,8 @@ import { Link } from 'react-router-dom';
 
 import {
   selectAuth,
-  AuthorizationState,
-  State as Auth,
+  AuthStatus,
+  AuthState as Auth,
   authActions
 } from '@tsp-wl/auth';
 import { ADTMember, matchI } from '@tsp-wl/utils';
@@ -52,7 +52,7 @@ export const AuthWrapper: FC<{}> = props => {
 
   const headerWidget = useMemo(() => {
     const login = () => <Link to={'/login'}>Login</Link>;
-    const logout = (data: ADTMember<Auth, AuthorizationState.Authorized>) => (
+    const logout = (data: ADTMember<Auth, AuthStatus.Authorized>) => (
       <span>
         <span>{data.userId}</span>
         &nbsp;
@@ -62,10 +62,10 @@ export const AuthWrapper: FC<{}> = props => {
       </span>
     );
     return matchI(auth)<ReactNode>({
-      [AuthorizationState.Unauthorized]: login,
-      [AuthorizationState.Error]: login,
-      [AuthorizationState.Authorized]: logout,
-      [AuthorizationState.InProgress]: () => <span>Wait...</span>
+      [AuthStatus.Unauthorized]: login,
+      [AuthStatus.Error]: login,
+      [AuthStatus.Authorized]: logout,
+      [AuthStatus.InProgress]: () => <span>Wait...</span>
     });
   }, [auth, onLogoutClick]);
 
@@ -77,10 +77,10 @@ export const AuthWrapper: FC<{}> = props => {
         requireAuthorization ? <LoginForm /> : content;
 
       return matchI(auth)<ContentWrapper>({
-        [AuthorizationState.Unauthorized]: withLoginForm,
-        [AuthorizationState.Error]: withLoginForm,
-        [AuthorizationState.Authorized]: () => content => content,
-        [AuthorizationState.InProgress]: () => () => (
+        [AuthStatus.Unauthorized]: withLoginForm,
+        [AuthStatus.Error]: withLoginForm,
+        [AuthStatus.Authorized]: () => content => content,
+        [AuthStatus.InProgress]: () => () => (
           <div>Wait for login/logout...</div>
         )
       });

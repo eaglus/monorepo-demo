@@ -1,6 +1,6 @@
 import { timeoutPromise } from '@tsp-wl/utils';
 
-import { actions, AuthorizationState, storePart, ThunkAction } from './types';
+import { actions, AuthStatus, storePart, ThunkAction } from './types';
 import { selectAuth } from './selectors';
 
 export const signIn = (
@@ -9,8 +9,8 @@ export const signIn = (
 ): ThunkAction<void> => async (dispatch, getState) => {
   const auth = selectAuth(getState());
   if (
-    auth._type === AuthorizationState.Authorized ||
-    auth._type === AuthorizationState.InProgress
+    auth._type === AuthStatus.Authorized ||
+    auth._type === AuthStatus.InProgress
   ) {
     throw new Error('Assertion failed: incorrect current auth state');
   }
@@ -24,14 +24,14 @@ export const signIn = (
   );
   dispatch(
     actions.set({
-      _type: AuthorizationState.InProgress
+      _type: AuthStatus.InProgress
     })
   );
   await timeoutPromise(1000);
 
   dispatch(
     actions.set({
-      _type: AuthorizationState.Authorized,
+      _type: AuthStatus.Authorized,
       accessToken: 'accessToken',
       refreshToken: 'refreshToken',
       userId: login
@@ -42,9 +42,9 @@ export const signIn = (
 export const signOut = (): ThunkAction<void> => async (dispatch, getState) => {
   const auth = selectAuth(getState());
   if (
-    auth._type === AuthorizationState.Unauthorized ||
-    auth._type === AuthorizationState.Error ||
-    auth._type === AuthorizationState.InProgress
+    auth._type === AuthStatus.Unauthorized ||
+    auth._type === AuthStatus.Error ||
+    auth._type === AuthStatus.InProgress
   ) {
     throw new Error('Assertion failed: incorrect current auth state');
   }
@@ -53,14 +53,14 @@ export const signOut = (): ThunkAction<void> => async (dispatch, getState) => {
 
   dispatch(
     actions.set({
-      _type: AuthorizationState.InProgress
+      _type: AuthStatus.InProgress
     })
   );
   await timeoutPromise(1000);
 
   dispatch(
     actions.set({
-      _type: AuthorizationState.Unauthorized
+      _type: AuthStatus.Unauthorized
     })
   );
 };

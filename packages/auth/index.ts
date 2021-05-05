@@ -1,5 +1,5 @@
-export type { StoreSegment, State, AuthData, AuthParams } from './types';
-export { actions as authActions, AuthorizationState } from './types';
+export type { AuthStoreSegment, AuthState, AuthData, AuthParams } from './types';
+export { actions as authActions, AuthStatus } from './types';
 
 export * from './selectors';
 export * from './thunk-actions';

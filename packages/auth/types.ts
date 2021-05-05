@@ -12,7 +12,7 @@ export const storePart = '@tsp-wl/auth';
 
 const actionFactory = actionCreatorFactory(storePart);
 
-export enum AuthorizationState {
+export enum AuthStatus {
   Authorized = 'Authorized',
   Unauthorized = 'Unauthorized',
   InProgress = 'InProgress',
@@ -30,26 +30,26 @@ export interface AuthData {
   userId: string;
 }
 
-export type State = ADT<{
-  [AuthorizationState.Authorized]: AuthData;
+export type AuthState = ADT<{
+  [AuthStatus.Authorized]: AuthData;
 
-  [AuthorizationState.Unauthorized]: {};
+  [AuthStatus.Unauthorized]: {};
 
-  [AuthorizationState.InProgress]: {};
+  [AuthStatus.InProgress]: {};
 
-  [AuthorizationState.Error]: ActionError;
+  [AuthStatus.Error]: ActionError;
 }>;
 
-export const initialState: State = {
-  _type: AuthorizationState.Unauthorized
+export const initialState: AuthState = {
+  _type: AuthStatus.Unauthorized
 };
 
-export type StoreSegment = StoreSegmentType<State, typeof storePart>;
-export type ReducerSegment = ReducerSegmentType<StoreSegment>;
-export type ThunkAction<T> = ThunkActionType<StoreSegment, T>;
+export type AuthStoreSegment = StoreSegmentType<AuthState, typeof storePart>;
+export type ReducerSegment = ReducerSegmentType<AuthStoreSegment>;
+export type ThunkAction<T> = ThunkActionType<AuthStoreSegment, T>;
 
 export const actions = {
-  set: actionFactory<State>('set'),
+  set: actionFactory<AuthState>('set'),
   signIn: actionFactory.async<AuthParams, AuthData, ActionError>('signIn'),
   signOut: actionFactory.async<void, void, ActionError>('signOut')
 };

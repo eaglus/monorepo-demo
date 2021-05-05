@@ -3,8 +3,8 @@ import { AnyAction } from 'typescript-fsa';
 
 import { pipe } from 'fp-ts/function';
 
-import { profileActions } from '@tsp-wl/profile';
-import { authActions } from '@tsp-wl/auth';
+import { profileActions, selectProfile } from '@tsp-wl/profile';
+import { authActions, selectAuthorizedData } from '@tsp-wl/auth';
 
 import {
   catchErrorO,
@@ -16,13 +16,17 @@ import { combineLatestR, combineWithSum } from '../operators/combineOperatorsR';
 //import { concatR } from './operators/combineOperatorsR';
 import { ofActionPayloadR } from '../deps/actionsDep';
 import { askApiService } from '../deps/apiServiceDep';
+import { askStateSelect } from '../deps/storeDep';
 
 //============ epic.ts ===============
+
+const askProfile = askStateSelect(selectProfile);
 
 export const epicAuth = pipe(
   combineLatestR([
     askApiService(),
-    ofActionPayloadR(authActions.signIn.started)
+    ofActionPayloadR(authActions.signIn.started),
+    askProfile
   ]),
   switchMapR(([api, signInParams]) =>
     pipe(

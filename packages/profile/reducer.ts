@@ -3,15 +3,15 @@ import { AnyAction } from 'typescript-fsa';
 import { reducerSegment as authReducerSegment } from '@tsp-wl/auth';
 
 import {
-  State,
+  ProfileState,
   actions,
   initialState,
   ReducerSegment,
   storePart,
-  ProfileState
+  ProfileStatus
 } from './types';
 
-export function reducer(state: State | undefined, action: AnyAction): State {
+export function reducer(state: ProfileState | undefined, action: AnyAction): ProfileState {
   if (!state) {
     return initialState;
   }
@@ -20,16 +20,16 @@ export function reducer(state: State | undefined, action: AnyAction): State {
     return action.payload;
   } else if (actions.load.started.match(action)) {
     return {
-      _type: ProfileState.InProgress
+      _type: ProfileStatus.InProgress
     };
   } else if (actions.load.done.match(action)) {
     return {
-      _type: ProfileState.Loaded,
+      _type: ProfileStatus.Loaded,
       ...action.payload.result
     };
   } else if (actions.load.failed.match(action)) {
     return {
-      _type: ProfileState.Error,
+      _type: ProfileStatus.Error,
       ...action.payload.error
     };
   } else {

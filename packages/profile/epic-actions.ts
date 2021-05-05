@@ -16,25 +16,25 @@ import { Epic, ofActionPayload, combineEpics } from '@tsp-wl/utils';
 import {
   epics as authEpics,
   selectAuth,
-  AuthorizationState
+  AuthStatus
 } from '@tsp-wl/auth';
 
 import {
-  StoreSegment,
+  ProfileFullStoreSegment,
   actions,
   ProfileData,
   storePart,
   initialState
 } from './types';
 
-const loadEpic: Epic<StoreSegment, LoggerDeps & ApiDeps> = (
+const loadEpic: Epic<ProfileFullStoreSegment, LoggerDeps & ApiDeps> = (
   actions$,
   state$,
   deps
 ) => {
   const authReady$ = state$.pipe(
     map(selectAuth),
-    first(auth => auth._type === AuthorizationState.Authorized)
+    first(auth => auth._type === AuthStatus.Authorized)
   );
 
   return actions$.pipe(
@@ -42,7 +42,7 @@ const loadEpic: Epic<StoreSegment, LoggerDeps & ApiDeps> = (
     switchMap(() =>
       combineLatest([authReady$]).pipe(
         switchMap(([auth]) => {
-          assert(auth._type === AuthorizationState.Authorized);
+          assert(auth._type === AuthStatus.Authorized);
           const userId = auth.userId;
           deps.logger.log(
             `[${storePart}:load]`,
@@ -65,14 +65,14 @@ const loadEpic: Epic<StoreSegment, LoggerDeps & ApiDeps> = (
   );
 };
 
-const resetEpic: Epic<StoreSegment, LoggerDeps & ApiDeps> = (
+const resetEpic: Epic<ProfileFullStoreSegment, LoggerDeps & ApiDeps> = (
   _actions$,
   state$
 ) =>
   state$.pipe(
     map(selectAuth),
     distinctUntilKeyChanged('_type'),
-    filter(auth => auth._type === AuthorizationState.Unauthorized),
+    filter(auth => auth._type === AuthStatus.Unauthorized),
     skip(1),
     map(() => actions.set(initialState))
   );

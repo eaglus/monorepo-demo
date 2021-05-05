@@ -1,5 +1,5 @@
-import { StoreSegment, storePart } from './types';
+import { ProfileFullStoreSegment, storePart } from './types';
 
-export function selectProfile(segment: StoreSegment) {
+export function selectProfile(segment: ProfileFullStoreSegment) {
   return segment[storePart];
 }

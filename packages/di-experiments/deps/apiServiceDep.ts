@@ -1,28 +1,37 @@
+import { filter } from 'rxjs/operators';
 import { readerObservable as RO } from 'fp-ts-rxjs';
 import { ReaderObservable } from 'fp-ts-rxjs/ReaderObservable';
 
 import { pipe } from 'fp-ts/function';
 
 import { ProfileData } from '@tsp-wl/profile';
-import { AuthParams, AuthData } from '@tsp-wl/auth';
+import {
+  AuthParams,
+  AuthData,
+  selectAuthorizedData,
+  AuthStoreSegment
+} from '@tsp-wl/auth';
 
 import { combineLatestR } from '../operators/combineOperatorsR';
 
-import { switchMapR } from '../operators/pipeOperatorsR';
+import { switchMapR, mapObservable } from '../operators/pipeOperatorsR';
 
 import { ApiTransportDep, askTransport } from './apiTransportDep';
 import { askLogger, LoggerDep } from './loggerDep';
-import { askAuthData, AuthDataDep } from './authDataDep';
+import { askStateSelect, StoreDep } from './storeDep';
 
 export interface ApiService {
   signIn(
     params: AuthParams
   ): ReaderObservable<ApiTransportDep & LoggerDep, AuthData>;
 
-  signOut(): ReaderObservable<ApiTransportDep & LoggerDep & AuthDataDep, void>;
+  signOut(): ReaderObservable<
+    ApiTransportDep & LoggerDep & StoreDep<AuthStoreSegment>,
+    void
+  >;
 
   fetchProfile(): ReaderObservable<
-    ApiTransportDep & LoggerDep & AuthDataDep,
+    ApiTransportDep & LoggerDep & StoreDep<AuthStoreSegment>,
     ProfileData
   >;
 }
@@ -37,6 +46,11 @@ export const askApiService = () =>
     RO.map(deps => deps.apiService)
   );
 
+const askAuthData = pipe(
+  askStateSelect(selectAuthorizedData),
+  mapObservable(filter((data): data is AuthData => data !== undefined))
+);
+
 export const createApiService = (): ApiService => ({
   signIn: params =>
     pipe(
@@ -49,9 +63,8 @@ export const createApiService = (): ApiService => ({
 
   signOut: () =>
     pipe(
-      combineLatestR([askLogger(), askTransport(), askAuthData()]),
-      switchMapR(([logger, transport, getAuthData]) => {
-        const authData = getAuthData();
+      combineLatestR([askLogger(), askTransport(), askAuthData]),
+      switchMapR(([logger, transport, authData]) => {
         logger.log('api service', 'signing out', authData.userId);
         return transport.call<void>('signOut', authData);
       })
@@ -59,9 +72,8 @@ export const createApiService = (): ApiService => ({
 
   fetchProfile: () =>
     pipe(
-      combineLatestR([askLogger(), askTransport(), askAuthData()]),
-      switchMapR(([logger, transport, getAuthData]) => {
-        const authData = getAuthData();
+      combineLatestR([askLogger(), askTransport(), askAuthData]),
+      switchMapR(([logger, transport, authData]) => {
         logger.log('api service', 'fetch profile', authData.userId);
         return transport.call<ProfileData>('getProfile', authData);
       })

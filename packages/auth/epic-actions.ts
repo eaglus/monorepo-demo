@@ -4,9 +4,9 @@ import { switchMap, catchError, map } from 'rxjs/operators';
 import { ApiDeps } from '@tsp-wl/api';
 import { Epic, ofActionPayload, combineEpics } from '@tsp-wl/utils';
 
-import { StoreSegment, actions, AuthData } from './types';
+import { AuthStoreSegment, actions, AuthData } from './types';
 
-const signInEpic: Epic<StoreSegment, ApiDeps> = (actions$, _state$, deps) =>
+const signInEpic: Epic<AuthStoreSegment, ApiDeps> = (actions$, _state$, deps) =>
   actions$.pipe(
     ofActionPayload(actions.signIn.started),
     switchMap(params =>
@@ -29,7 +29,7 @@ const signInEpic: Epic<StoreSegment, ApiDeps> = (actions$, _state$, deps) =>
     )
   );
 
-const signOutEpic: Epic<StoreSegment, ApiDeps> = (actions$, _state$, deps) =>
+const signOutEpic: Epic<AuthStoreSegment, ApiDeps> = (actions$, _state$, deps) =>
   actions$.pipe(
     ofActionPayload(actions.signOut.started),
     switchMap(() =>
