@@ -6,7 +6,7 @@ import { useDispatch } from '@tsp-wl/utils';
 import { selectAuth, AuthStatus } from '@tsp-wl/auth';
 //import { load } from '@tsp-wl/profile';
 import { selectProfile, ProfileStatus, profileActions } from '@tsp-wl/profile';
-import { treeShakingTest21, treeShakingTest31 } from '@tsp-wl/utils';
+import { treeShakingTestL0_21, treeShakingTestL0_31 } from '@tsp-wl/utils';
 
 import styles from './styles.css';
 
@@ -17,8 +17,8 @@ const ProfileView: FC<{}> = () => {
   assert(auth._type === AuthStatus.Authorized);
 
   useEffect(() => {
-    treeShakingTest21();
-    treeShakingTest31();
+    treeShakingTestL0_21();
+    treeShakingTestL0_31();
     dispatch(profileActions.load.started());
   }, [dispatch, auth]);
 

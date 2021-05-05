@@ -6,14 +6,14 @@ import { useDispatch } from '@tsp-wl/utils';
 import { selectAuth, AuthStatus } from '@tsp-wl/auth';
 //import { load } from '@tsp-wl/profile';
 import { selectProfile, ProfileStatus, profileActions } from '@tsp-wl/profile';
-import { treeShakingTest11, treeShakingTest31 } from '@tsp-wl/utils';
-import { epicR3, epicR2 } from '@tsp-wl/utils';
+import { treeShakingTestL0_11, treeShakingTestL0_31 } from '@tsp-wl/utils';
+import { treeShakingTestL2_3, treeShakingTestL2_2 } from '@tsp-wl/utils';
 
 import styles from './styles.css';
 
 const ProfileEdit: FC<{}> = () => {
-  epicR3();
-  epicR2();
+  treeShakingTestL2_3();
+  treeShakingTestL2_2();
 
   const dispatch = useDispatch();
   const auth = useSelector(selectAuth);
@@ -21,8 +21,8 @@ const ProfileEdit: FC<{}> = () => {
   assert(auth._type === AuthStatus.Authorized);
 
   useEffect(() => {
-    treeShakingTest11();
-    treeShakingTest31();
+    treeShakingTestL0_11();
+    treeShakingTestL0_31();
     dispatch(profileActions.load.started());
   }, [dispatch, auth]);
 
