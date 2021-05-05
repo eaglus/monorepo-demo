@@ -40,7 +40,8 @@ module.exports = api => {
       '@babel/plugin-proposal-class-properties',
       '@babel/plugin-proposal-nullish-coalescing-operator',
       '@babel/plugin-proposal-optional-chaining',
-      '@loadable/babel-plugin'
+      '@loadable/babel-plugin',
+      ['@babel/plugin-proposal-private-methods', { loose: false }]
     ].filter(p => !!p)
   };
 
