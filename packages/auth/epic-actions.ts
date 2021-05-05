@@ -29,7 +29,11 @@ const signInEpic: Epic<AuthStoreSegment, ApiDeps> = (actions$, _state$, deps) =>
     )
   );
 
-const signOutEpic: Epic<AuthStoreSegment, ApiDeps> = (actions$, _state$, deps) =>
+const signOutEpic: Epic<AuthStoreSegment, ApiDeps> = (
+  actions$,
+  _state$,
+  deps
+) =>
   actions$.pipe(
     ofActionPayload(actions.signOut.started),
     switchMap(() =>

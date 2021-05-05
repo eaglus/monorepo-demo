@@ -80,9 +80,7 @@ export const AuthWrapper: FC<{}> = props => {
         [AuthStatus.Unauthorized]: withLoginForm,
         [AuthStatus.Error]: withLoginForm,
         [AuthStatus.Authorized]: () => content => content,
-        [AuthStatus.InProgress]: () => () => (
-          <div>Wait for login/logout...</div>
-        )
+        [AuthStatus.InProgress]: () => () => <div>Wait for login/logout...</div>
       });
     },
     [auth]

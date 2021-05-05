@@ -9,7 +9,10 @@ import {
   storePart
 } from './types';
 
-export function reducer(state: AuthState | undefined, action: AnyAction): AuthState {
+export function reducer(
+  state: AuthState | undefined,
+  action: AnyAction
+): AuthState {
   if (!state) {
     return initialState;
   }

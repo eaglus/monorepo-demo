@@ -11,7 +11,10 @@ import {
   ProfileStatus
 } from './types';
 
-export function reducer(state: ProfileState | undefined, action: AnyAction): ProfileState {
+export function reducer(
+  state: ProfileState | undefined,
+  action: AnyAction
+): ProfileState {
   if (!state) {
     return initialState;
   }

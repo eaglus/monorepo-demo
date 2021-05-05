@@ -13,11 +13,7 @@ import { LoggerDeps } from '@tsp-wl/logger';
 import { ApiDeps } from '@tsp-wl/api';
 import { assert } from '@tsp-wl/utils';
 import { Epic, ofActionPayload, combineEpics } from '@tsp-wl/utils';
-import {
-  epics as authEpics,
-  selectAuth,
-  AuthStatus
-} from '@tsp-wl/auth';
+import { epics as authEpics, selectAuth, AuthStatus } from '@tsp-wl/auth';
 
 import {
   ProfileFullStoreSegment,

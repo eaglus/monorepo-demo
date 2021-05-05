@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect';
+
 import { AuthStoreSegment, storePart, AuthData } from './types';
 
 export function selectAuth(segment: AuthStoreSegment) {

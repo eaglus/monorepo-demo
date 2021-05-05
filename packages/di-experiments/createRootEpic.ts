@@ -16,7 +16,10 @@ export function createRootEpic<Deps extends ActionsDep & StoreDep<any>>(
 
   type State = StateOfStoreDep<Deps>;
 
-  const rootEpic: Epic<AnyAction, AnyAction, State> = (action$, state$) => {
+  const rootEpic: Epic<AnyAction, AnyAction, State, never> = (
+    action$,
+    state$
+  ) => {
     const actionsDep: ActionsDep = {
       actions$: action$
     };

@@ -7,7 +7,12 @@ import {
   middlewares as authMiddlewares
 } from '@tsp-wl/auth';
 
-import { ProfileFullStoreSegment, actions, ProfileStatus, storePart } from './types';
+import {
+  ProfileFullStoreSegment,
+  actions,
+  ProfileStatus,
+  storePart
+} from './types';
 
 const profileMiddleware: Middleware<unknown, ProfileFullStoreSegment> = api => {
   return next => (action: AnyAction) => {
